@@ -10,14 +10,35 @@ import (
 
 func main() {
 	app := &cli.App{
-        Name:  "boom",
-        Usage: "make an explosive entrance",
-        Action: func(*cli.Context) error {
-            fmt.Println("boom! I say!")
+        Name:  "Website Health Checker",
+        Usage: "Check to see if a website is running",
+        Flags: []cli.Flag{
+            &cli.StringFlag{
+                Name:  "domain",
+                Aliases: []string{"d"},
+                Usage: "Domain name to check",
+                Required: true,
+            },
+            &cli.StringFlag{
+                Name:  "port",
+                Aliases: []string{"p"},
+                Usage: "Port number to check",
+                Required: false,
+        },},
+        Action: func(c *cli.Context) error {
+            port := c.String("port")
+            if c.String("port") == "" {
+                port = "80"
+            }
+
+            status := Check(c.String("domain"), port)
+            fmt.Println((status))
             return nil
         },
 	}
-	if err := app.Run(os.Args); err != nil {
+
+    err := app.Run(os.Args)
+	if err != nil {
         log.Fatal(err)
     }
 }
